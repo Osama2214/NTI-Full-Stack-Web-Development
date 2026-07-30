@@ -8,7 +8,7 @@ It is a modern, premium, and fully responsive landing page designed to showcase 
 ---
 
 ## 🌐 Live Preview & Developer Info
-* **Live Demo:** [nti-task-2.vercel.app](https://nti-task-2.vercel.app/)
+* **Live Demo:** [nti-task-2.vercel.app](https://coffee-landing-osama.vercel.app/)
 * **Developed By:** Osama Ahmed
 * **GitHub Profile:** [@Osama2214](https://github.com/Osama2214)
 * **Portfolio:** [Osama's Portfolio](https://osama-portfolio-six.vercel.app/)

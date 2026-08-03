@@ -48,18 +48,18 @@ It is a modern, premium, and fully responsive landing page designed to showcase 
 ```bash
 NTI-Task-2/
 ├── CSS/
-│   └── style.css          # Custom style configurations, variables, and responsive media queries
+│   └── style.css           # Custom style configurations, variables, and responsive media queries
 ├── images/
-│   ├── Hero.jpg           # High-resolution hero background
-│   ├── about.jpg          # Barista showcase image
-│   ├── roast.jpg          # Coffee roasting process image
-│   ├── espresso.jpg       # Specialty card image - Espresso
-│   ├── slow_brew.jpg      # Specialty card image - Pour Over
-│   ├── pastries.jpg       # Specialty card image - Pastries
-│   ├── logo-1.png         # Main café branding logo
-│   └── logo-1-original.png# Original high-res logo asset
-├── index.html             # Main semantic HTML structure of the landing page
-└── README.md              # Project documentation
+│   ├── Hero.jpg            # High-resolution hero background
+│   ├── about.jpg           # Barista showcase image
+│   ├── roast.jpg           # Coffee roasting process image
+│   ├── espresso.jpg        # Specialty card image - Espresso
+│   ├── slow_brew.jpg       # Specialty card image - Pour Over
+│   ├── pastries.jpg        # Specialty card image - Pastries
+│   ├── logo-1.png          # Main café branding logo
+│   └── logo-1-original.png # Original high-res logo asset
+├── index.html              # Main semantic HTML structure of the landing page
+└── README.md               # Project documentation
 ```
 
 ---

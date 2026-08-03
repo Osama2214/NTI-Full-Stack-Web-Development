@@ -16,3 +16,5 @@ This repository contains my assignments, projects, and practice completed during
 - NTI-HTML-CSS-Session1
 - Task-2/osama-cafe
 - PHP-Assignments
+- PHP-Ecommerce-Store
+- 

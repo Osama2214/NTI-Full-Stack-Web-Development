@@ -17,4 +17,4 @@ This repository contains my assignments, projects, and practice completed during
 - Task-2/osama-cafe
 - PHP-Assignments
 - PHP-Ecommerce-Store
-- 
+  

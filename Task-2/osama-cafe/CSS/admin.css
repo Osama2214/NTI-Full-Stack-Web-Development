@@ -1,0 +1,1088 @@
+/* ==========================================================================
+   Shared styles for every admin-*.php page (login, overview, messages,
+   menu, settings). Loaded alongside style.css, which supplies the theme
+   variables, fonts, and .btn / .btn-primary / .btn-secondary classes.
+   ========================================================================== */
+
+body.admin-body {
+  padding: 0;
+  max-width: none;
+  margin: 0;
+}
+
+.admin-content {
+  padding: 40px 30px 70px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+/* --- Top bar / nav ------------------------------------------------------- */
+
+.admin-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  background-color: var(--secondary-dark);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.admin-topbar-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 30px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 64px;
+  flex-wrap: wrap;
+  gap: 10px 20px;
+}
+
+.admin-brand {
+  font-family: var(--font-title);
+  font-size: 1.15rem;
+  color: var(--text-primary);
+  text-decoration: none;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.admin-brand-logo {
+  max-height: 34px;
+  width: auto;
+  display: block;
+  filter: brightness(1.95) sepia(0.14) saturate(1.5) drop-shadow(0 0 6px rgba(217, 160, 91, 0.5));
+}
+
+.admin-brand span {
+  color: var(--accent-color);
+  font-weight: 600;
+  margin-left: 4px;
+}
+
+.admin-nav {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.admin-nav a {
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 0.88rem;
+  padding: 8px 14px;
+  border-radius: 6px;
+  transition: var(--transition-fast);
+  white-space: nowrap;
+}
+
+.admin-nav a:hover {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.admin-nav a.active {
+  color: var(--primary-dark);
+  background: var(--accent-color);
+  font-weight: 600;
+}
+
+.admin-nav a.admin-logout {
+  color: #e07a5f;
+  margin-left: 6px;
+}
+
+.admin-nav a.admin-logout:hover {
+  background: rgba(224, 122, 95, 0.12);
+}
+
+.admin-nav-toggle {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  width: 38px;
+  height: 38px;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.admin-nav-toggle span {
+  display: block;
+  height: 2px;
+  width: 18px;
+  margin: 0 auto;
+  background: var(--text-primary);
+}
+
+@media (max-width: 720px) {
+  .admin-nav-toggle {
+    display: flex;
+  }
+  .admin-nav {
+    display: none;
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+    padding-bottom: 12px;
+  }
+  .admin-nav.open {
+    display: flex;
+  }
+  .admin-nav a {
+    padding: 12px 14px;
+  }
+  .admin-nav a.admin-logout {
+    margin-left: 0;
+  }
+}
+
+/* --- Page header row (title + actions) ------------------------------------ */
+
+.admin-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 34px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.admin-header p {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  margin-top: 4px;
+}
+
+/* --- Stat cards (overview page) ------------------------------------------- */
+
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 16px;
+  margin-bottom: 40px;
+}
+
+.stat-card {
+  background-color: var(--secondary-dark);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+  padding: 20px 22px;
+}
+
+.stat-card .stat-value {
+  font-family: var(--font-title);
+  font-size: 2rem;
+  color: var(--text-primary);
+  line-height: 1.1;
+}
+
+.stat-card .stat-label {
+  color: var(--accent-color);
+  font-size: 0.76rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 6px;
+}
+
+.stat-card .stat-sub {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  margin-top: 4px;
+}
+
+.quick-links {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 40px;
+}
+
+.dash-columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 26px;
+}
+
+@media (max-width: 800px) {
+  .dash-columns {
+    grid-template-columns: 1fr;
+  }
+}
+
+.dash-panel {
+  background-color: var(--secondary-dark);
+  border-radius: 10px;
+  padding: 22px 24px;
+}
+
+.dash-panel h3 {
+  margin-bottom: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.dash-panel h3 a {
+  font-size: 0.78rem;
+  color: var(--accent-color);
+  text-decoration: none;
+  font-weight: 400;
+}
+
+.dash-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.dash-list li {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  padding-bottom: 12px;
+  font-size: 0.88rem;
+}
+
+.dash-list li:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.dash-list .dash-list-title {
+  color: var(--text-primary);
+}
+
+.dash-list .dash-list-meta {
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  margin-top: 2px;
+}
+
+/* --- Login page ------------------------------------------------------------ */
+
+.admin-login {
+  max-width: 360px;
+  margin: 100px auto;
+  text-align: center;
+  padding: 0 20px;
+}
+
+.admin-login-logo {
+  max-height: 72px;
+  width: auto;
+  display: block;
+  margin: 0 auto 44px;
+  filter: brightness(1.95) sepia(0.14) saturate(1.5) drop-shadow(0 0 9px rgba(217, 160, 91, 0.6));
+}
+
+.admin-login h2 {
+  margin-bottom: 22px;
+}
+
+.admin-login input {
+  width: 100%;
+  padding: 14px 16px;
+  margin-bottom: 16px;
+  background-color: var(--secondary-dark);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 5px;
+  color: var(--text-primary);
+}
+
+.admin-error {
+  color: #e07a5f;
+  margin-bottom: 16px;
+  font-size: 0.9rem;
+}
+
+/* --- Tables ----------------------------------------------------------------- */
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 24px;
+}
+
+.admin-content th,
+.admin-content td {
+  text-align: left;
+  padding: 12px 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  font-size: 0.92rem;
+  vertical-align: top;
+}
+
+.admin-content th {
+  color: var(--accent-color);
+  text-transform: uppercase;
+  font-size: 0.78rem;
+  letter-spacing: 0.5px;
+}
+
+.admin-content td {
+  color: var(--text-secondary);
+}
+
+.table-scroll {
+  overflow-x: auto;
+}
+
+.empty-note {
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+/* --- Section headers, actions, buttons -------------------------------------- */
+
+.section-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.table-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.btn-small {
+  padding: 8px 16px;
+  font-size: 0.8rem;
+}
+
+td .btn-small {
+  white-space: nowrap;
+}
+
+.btn-disabled {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.row-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.row-actions form {
+  display: contents;
+}
+
+.thumb {
+  width: 56px;
+  height: 56px;
+  object-fit: cover;
+  border-radius: 4px;
+  display: block;
+}
+
+/* --- Toast notifications ------------------------------------------------------ */
+/* A status message (category added, item deleted, etc.) floats in top-right.
+   No auto-dismiss timer — it stays until the user closes it with the ×
+   button, so there's no question of "how long should this last".
+
+   Deliberately prefixed "admin-toast", not just "toast" — style.css (also
+   loaded on every admin page) has its own unrelated .toast / .toast-container
+   for the public site's contact-form feedback, which starts off-screen via
+   transform: translateX(-120%) until JS adds a .show class. A shared class
+   name here caused a real, hard-to-spot bug: this toast's entrance animation
+   would finish, and — with no fill-mode: forwards to lock in its result —
+   the element fell back to the *other* stylesheet's translateX(-120%), so it
+   visually slid off-screen ~0.25s after appearing. That looked exactly like
+   an early auto-dismiss, but had nothing to do with any timer; it happened
+   even with no JS-driven dismiss logic at all. Keeping these classes
+   completely separate from the public site's is what actually fixes it —
+   animation-fill-mode: forwards is added below too, belt and suspenders. */
+
+.admin-toast-container {
+  position: fixed;
+  top: 80px;
+  right: 24px;
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 320px;
+  max-width: calc(100vw - 32px);
+  pointer-events: none;
+}
+
+.admin-toast {
+  pointer-events: auto;
+  position: relative;
+  padding: 14px 38px 17px 18px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  color: var(--text-primary);
+  background-color: #32241a;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+  transform: translateX(0);
+  animation: admin-toast-in 0.25s ease forwards;
+  overflow: hidden;
+}
+
+.admin-toast::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  border-radius: 8px 0 0 8px;
+  background-color: var(--accent-color);
+}
+
+.admin-toast.warn::before {
+  background-color: #e07a5f;
+}
+
+.admin-toast.success {
+  border: 1px solid rgba(217, 160, 91, 0.35);
+}
+
+.admin-toast.warn {
+  border: 1px solid rgba(224, 122, 95, 0.35);
+}
+
+.admin-toast.hide {
+  animation: admin-toast-out 0.25s ease forwards;
+}
+
+.admin-toast-progress {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 4px;
+  width: 100%;
+  background-color: var(--accent-color);
+  /* Width is set directly from JS on a plain interval (see admin.js), not a
+     CSS @keyframes animation — this 0.1s transition just smooths out the
+     per-tick jump between updates. */
+  transition: width 0.1s linear;
+}
+
+.admin-toast.warn .admin-toast-progress {
+  background-color: #e07a5f;
+}
+
+.admin-toast-close {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 26px;
+  height: 26px;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 1.15rem;
+  line-height: 1;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.admin-toast-close:hover {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+@keyframes admin-toast-in {
+  from {
+    opacity: 0;
+    transform: translateX(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes admin-toast-out {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(24px);
+  }
+}
+
+@media (max-width: 640px) {
+  .admin-toast-container {
+    left: 16px;
+    right: 16px;
+    top: 72px;
+    width: auto;
+  }
+}
+
+/* --- Search / filter bars ----------------------------------------------------- */
+
+.filter-bar {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.filter-bar input[type="search"],
+.filter-bar input[type="text"],
+.filter-bar select {
+  padding: 10px 14px;
+  background-color: var(--secondary-dark);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 5px;
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 0.88rem;
+}
+
+.filter-bar input[type="search"] {
+  flex: 1;
+  min-width: 180px;
+}
+
+.filter-bar .filter-clear {
+  color: var(--text-muted);
+  font-size: 0.82rem;
+  text-decoration: underline;
+  white-space: nowrap;
+}
+
+.result-count {
+  color: var(--text-muted);
+  font-size: 0.82rem;
+  margin-bottom: 12px;
+}
+
+mark {
+  background: rgba(217, 160, 91, 0.35);
+  color: inherit;
+  border-radius: 2px;
+  padding: 0 1px;
+}
+
+/* --- Pagination ---------------------------------------------------------------- */
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin: 10px 0 40px;
+}
+
+.pagination-status {
+  color: var(--text-muted);
+  font-size: 0.82rem;
+}
+
+/* --- Panels (forms) -------------------------------------------------------------- */
+
+.panel {
+  background-color: var(--secondary-dark);
+  border-radius: 8px;
+  padding: 24px;
+  margin-bottom: 30px;
+}
+
+.panel h3 {
+  margin-bottom: 18px;
+}
+
+.panel-hint {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  margin-bottom: 18px;
+  margin-top: -12px;
+}
+
+.panel input,
+.panel textarea,
+.panel select,
+.broadcast-form input,
+.broadcast-form textarea,
+.template-picker select {
+  width: 100%;
+  padding: 12px 14px;
+  margin-bottom: 14px;
+  background-color: var(--primary-dark);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 5px;
+  color: var(--text-primary);
+  font-family: var(--font-body);
+}
+
+.panel textarea,
+.broadcast-form textarea {
+  min-height: 90px;
+  resize: vertical;
+}
+
+/* The "Choose File" button is browser-native chrome — ::file-selector-button
+   (and the older -webkit- name, for wider support) is the one part of a
+   file input CSS actually gets to style directly, no JS replacement needed. */
+.panel input[type='file'] {
+  padding: 10px 14px;
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+}
+
+.panel input[type='file']::file-selector-button,
+.panel input[type='file']::-webkit-file-upload-button {
+  margin-right: 14px;
+  padding: 9px 18px;
+  background-color: var(--accent-color);
+  color: var(--primary-dark);
+  border: none;
+  border-radius: 5px;
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.panel input[type='file']:hover::file-selector-button,
+.panel input[type='file']:hover::-webkit-file-upload-button {
+  background-color: var(--accent-hover);
+}
+
+.field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.field-row-3 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 14px;
+}
+
+@media (max-width: 640px) {
+  .field-row,
+  .field-row-3 {
+    grid-template-columns: 1fr;
+  }
+}
+
+.field-label {
+  display: block;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--accent-color);
+  margin-bottom: 6px;
+}
+
+.hint-icon {
+  position: relative;
+  display: inline-block;
+  color: var(--text-muted);
+  cursor: help;
+  font-size: 0.95rem;
+  vertical-align: middle;
+}
+
+.hint-tooltip {
+  position: absolute;
+  bottom: 130%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 240px;
+  background-color: var(--primary-dark);
+  border: 1px solid rgba(217, 160, 91, 0.3);
+  border-radius: 6px;
+  padding: 10px 12px;
+  font-size: 0.78rem;
+  line-height: 1.4;
+  color: var(--text-secondary);
+  text-transform: none;
+  letter-spacing: normal;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.15s ease;
+  z-index: 20;
+  pointer-events: none;
+}
+
+.hint-icon:hover .hint-tooltip,
+.hint-icon:focus .hint-tooltip {
+  opacity: 1;
+  visibility: visible;
+}
+
+.inline-form {
+  display: flex;
+  gap: 10px;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.inline-form > * {
+  margin-bottom: 0 !important;
+}
+
+.inline-form input[type="text"] {
+  width: auto;
+  flex: 1;
+  min-width: 180px;
+}
+
+.category-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--primary-dark);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 30px;
+  padding: 6px 8px 6px 14px;
+  margin: 0 8px 8px 0;
+  font-size: 0.85rem;
+}
+
+.category-tag form {
+  display: inline;
+}
+
+.category-tag button {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 2px 6px;
+}
+
+.category-tag button:hover {
+  color: #e07a5f;
+}
+
+.primary-badge {
+  display: inline-block;
+  background: var(--accent-color);
+  color: var(--primary-dark);
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 10px;
+  margin-left: 8px;
+}
+
+.mail-off-note {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  margin-bottom: 30px;
+}
+
+.template-picker {
+  margin-bottom: 16px;
+}
+
+.template-picker label {
+  display: block;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--accent-color);
+  margin-bottom: 8px;
+}
+
+@media (max-width: 640px) {
+  .admin-content {
+    padding: 28px 18px 50px;
+  }
+  .admin-topbar-inner {
+    padding: 0 18px;
+  }
+}
+
+/* --- Custom confirm dialog (replaces the browser's native confirm()) ------------ */
+
+.confirm-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 6, 3, 0.68);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 300;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease;
+}
+
+.confirm-overlay.open {
+  opacity: 1;
+  visibility: visible;
+}
+
+.confirm-dialog {
+  background-color: var(--secondary-dark);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 30px 28px 26px;
+  max-width: 380px;
+  width: 100%;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.55);
+  transform: translateY(-10px) scale(0.97);
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  text-align: center;
+}
+
+.confirm-overlay.open .confirm-dialog {
+  transform: translateY(0) scale(1);
+}
+
+.confirm-icon {
+  width: 50px;
+  height: 50px;
+  margin: 0 auto 16px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(217, 160, 91, 0.14);
+  color: var(--accent-color);
+}
+
+.confirm-icon.danger {
+  background: rgba(224, 122, 95, 0.14);
+  color: #e07a5f;
+}
+
+.confirm-icon svg {
+  width: 24px;
+  height: 24px;
+}
+
+.confirm-message {
+  color: var(--text-primary);
+  font-family: var(--font-title);
+  font-size: 1.05rem;
+  line-height: 1.5;
+  margin-bottom: 24px;
+}
+
+.confirm-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.confirm-actions .btn {
+  flex: 1;
+}
+
+.btn-danger {
+  background-color: #e07a5f;
+  color: var(--primary-dark);
+  border: 2px solid #e07a5f;
+}
+
+.btn-danger:hover {
+  background-color: transparent;
+  color: #e07a5f;
+}
+
+/* --- Custom select dropdowns --------------------------------------------------- */
+/* A native <select>'s closed-state arrow can be restyled with CSS, but its
+   open option list is drawn by the OS, not the page — no CSS can touch its
+   colors or hover state. This builds a fully-themed replacement on top of
+   every <select> in the admin dashboard (see initCustomSelects in admin.js),
+   keeping the real <select> in the DOM — invisible, but still the thing
+   that actually holds the value and gets submitted/validated — so nothing
+   breaks if JS fails to run. */
+
+.custom-select {
+  position: relative;
+}
+
+.panel .custom-select,
+.broadcast-form .custom-select {
+  width: 100%;
+  margin-bottom: 14px;
+}
+
+.filter-bar .custom-select {
+  min-width: 170px;
+}
+
+.custom-select-native {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  pointer-events: none;
+  margin: 0 !important;
+}
+
+.custom-select-trigger {
+  width: 100%;
+  height: 46px;
+  display: flex;
+  align-items: center;
+  text-align: left;
+  padding: 0 38px 0 14px;
+  background-color: var(--primary-dark);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 5px;
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 0.88rem;
+  cursor: pointer;
+  position: relative;
+}
+
+.filter-bar .custom-select-trigger {
+  height: 42px;
+}
+
+.custom-select-trigger:hover {
+  border-color: rgba(217, 160, 91, 0.4);
+}
+
+.custom-select-trigger::after {
+  content: '';
+  position: absolute;
+  right: 15px;
+  top: 45%;
+  width: 7px;
+  height: 7px;
+  border-right: 2px solid var(--accent-color);
+  border-bottom: 2px solid var(--accent-color);
+  transform: translateY(-50%) rotate(45deg);
+  transition: transform 0.15s ease;
+}
+
+.custom-select.open .custom-select-trigger::after {
+  transform: translateY(-20%) rotate(-135deg);
+}
+
+.custom-select-options {
+  display: none;
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  background-color: var(--secondary-dark);
+  border: 1px solid rgba(217, 160, 91, 0.3);
+  border-radius: 6px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.45);
+  max-height: 240px;
+  overflow-y: auto;
+  z-index: 60;
+  padding: 4px;
+}
+
+.custom-select.open .custom-select-options {
+  display: block;
+}
+
+.custom-select-option {
+  padding: 9px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  color: var(--text-secondary);
+  font-size: 0.88rem;
+}
+
+.custom-select-option:hover,
+.custom-select-option.active {
+  background-color: rgba(217, 160, 91, 0.14);
+  color: var(--text-primary);
+}
+
+.custom-select-option.selected {
+  background-color: var(--accent-color);
+  color: var(--primary-dark);
+}
+
+/* --- Custom number steppers ----------------------------------------------------- */
+/* Replaces the browser's native number-input spin arrows (styled
+   inconsistently across browsers and hard to theme) with matching up/down
+   buttons — see initNumberSteppers in admin.js. */
+
+input[type='number'] {
+  -moz-appearance: textfield;
+}
+
+input[type='number']::-webkit-inner-spin-button,
+input[type='number']::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.number-stepper {
+  position: relative;
+}
+
+.panel .number-stepper {
+  width: 100%;
+  margin-bottom: 14px;
+}
+
+.number-stepper input[type='number'] {
+  width: 100%;
+  height: 46px;
+  padding-right: 34px;
+  margin-bottom: 0 !important;
+}
+
+.number-stepper-btn {
+  position: absolute;
+  right: 1px;
+  width: 28px;
+  height: calc(50% - 1px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+}
+
+.number-stepper-btn svg {
+  width: 9px;
+  height: 9px;
+  display: block;
+}
+
+.number-stepper-btn.up {
+  top: 1px;
+  border-radius: 0 4px 0 0;
+}
+
+.number-stepper-btn.down {
+  bottom: 1px;
+  border-radius: 0 0 4px 0;
+}
+
+.number-stepper-btn:hover {
+  color: var(--accent-color);
+  background-color: rgba(255, 255, 255, 0.05);
+}

@@ -1,0 +1,19 @@
+# Defense in depth: even though config.php never echoes anything (a direct
+# request to it just renders blank if PHP is executing normally), this
+# blocks it — and any stray editor backup of it — outright. Only matters
+# under Apache (e.g. XAMPP); PHP's built-in server (`php -S`) ignores
+# .htaccess entirely, so this has no effect there.
+# Internal require_once() calls from other PHP files are unaffected —
+# this only blocks direct HTTP requests.
+
+<IfModule mod_authz_core.c>
+    <FilesMatch "(^config\.php$|\.bak$|~$|\.swp$|\.orig$)">
+        Require all denied
+    </FilesMatch>
+</IfModule>
+<IfModule !mod_authz_core.c>
+    <FilesMatch "(^config\.php$|\.bak$|~$|\.swp$|\.orig$)">
+        Order deny,allow
+        Deny from all
+    </FilesMatch>
+</IfModule>

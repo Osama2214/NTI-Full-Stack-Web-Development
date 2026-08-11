@@ -1,0 +1,15 @@
+# Backend secrets & local data — never commit these
+php/config.php
+data/*.sqlite
+data/*.sqlite-journal
+data/login_attempts.json
+
+# Photos uploaded through the admin menu/gallery editors — user content, not source
+images/menu/
+images/gallery/
+
+# Composer dependencies — run `composer install` to regenerate
+# (.htaccess is kept tracked so the folder stays blocked from direct web
+# access even on a fresh clone, before `composer install` has run)
+/vendor/*
+!/vendor/.htaccess

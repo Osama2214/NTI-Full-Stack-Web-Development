@@ -1,0 +1,12 @@
+# Blocks all direct web access to this folder (the SQLite database and the
+# login rate-limit file). PHP reads/writes these by filesystem path, which
+# this doesn't affect — it only blocks direct HTTP requests to them.
+# Apache only (XAMPP); PHP's built-in server (`php -S`) ignores .htaccess.
+
+<IfModule mod_authz_core.c>
+    Require all denied
+</IfModule>
+<IfModule !mod_authz_core.c>
+    Order deny,allow
+    Deny from all
+</IfModule>

@@ -1,12 +1,12 @@
 # Osama Café ☕
 ### Premium Artisanal Coffee Roastery & Café — Landing Page + Backend
 
-Welcome to the **Osama Café** project repository! This project started as **Task 2** for the **NTI Full Stack Developer using PHP** training program, and has since been extended independently into a full portfolio-ready build: a richer, animated front end plus a small real PHP + SQLite backend for the contact form and newsletter signup.
+Welcome to the **Osama Café** project repository! This project started as **Task 2** for the **NTI Full Stack Developer using PHP** training program, and has since been extended independently into a full portfolio-ready build: a richer, animated front end plus a small real PHP backend (SQLite or MySQL) for the contact form and newsletter signup.
 
 ---
 
 ## 🌐 Live Preview & Developer Info
-* **Live Demo:** [nti-task-2.vercel.app](https://nti-task-2.vercel.app/)
+* **Live Demo:** [osama-cafe.xo.je](https://osama-cafe.xo.je/)
 * **Developed By:** Osama Ahmed
 * **GitHub Profile:** [@Osama2214](https://github.com/Osama2214)
 * **Portfolio:** [Osama's Portfolio](https://osama-portfolio-six.vercel.app/)
@@ -37,7 +37,7 @@ Welcome to the **Osama Café** project repository! This project started as **Tas
 * **PHP 8** — the page itself (`index.php`) renders the menu from the database server-side; everything else is semantic HTML5 markup.
 * **Vanilla CSS3** — custom properties for theme consistency, CSS Grid/Flexbox, transition-based micro-animations.
 * **Vanilla JavaScript** — no frameworks, no build step. All interactivity in [`JS/main.js`](JS/main.js).
-* **PDO/SQLite** — a small JSON API (`php/`) for the contact form, newsletter, and menu content, with a password-protected admin area.
+* **PDO** — a small JSON API (`php/`) for the contact form, newsletter, and menu content, with a password-protected admin area. Runs on **SQLite** by default (zero setup, one self-contained file) or **MySQL** (switchable via config, for shared hosts with no SQLite/SSH support — this is what the live demo runs on).
 * **PHPMailer** (via Composer) — real SMTP email sending, fully optional (see below).
 * **Font Awesome v6** and **Google Fonts** for icons and typography.
 
@@ -54,7 +54,7 @@ NTI-Task-2/
 │   ├── main.js                # All public-site interactivity (vanilla JS)
 │   └── admin.js                # Admin dashboard interactivity (mobile nav toggle, copy emails)
 ├── php/
-│   ├── db.php                 # PDO/SQLite connection + auto-creates tables + first-run menu seed
+│   ├── db.php                 # PDO connection (SQLite by default, MySQL via config) + auto-creates tables + first-run menu seed
 │   ├── helpers.php            # Shared JSON response / input helpers
 │   ├── mailer.php              # PHPMailer/SMTP wrapper — fails soft if not configured
 │   ├── contact.php            # POST endpoint: saves contact form messages, emails a copy + auto-reply
@@ -93,7 +93,7 @@ The homepage is now `index.php`, not a plain HTML file — it queries the menu f
 
 ---
 
-## 🔧 Backend Setup (PHP + SQLite)
+## 🔧 Backend Setup (PHP + SQLite/MySQL)
 
 To get the contact form and newsletter actually saving to a real database, the site needs to be served *through PHP*, not opened as a plain file.
 
@@ -119,6 +119,17 @@ Open `php/config.php` and set your own `ADMIN_PASSWORD` (used to log into `/php/
 - **Or with XAMPP:** place/move the project folder into `C:\xampp\htdocs\`, start **Apache** in the XAMPP Control Panel (MySQL is not needed — this uses SQLite), then open `http://localhost/NTI-Task-2/`.
 
 **4. That's it for storage — no database server to install or configure.** `php/db.php` creates `data/osama_cafe.sqlite` and its tables automatically on the first request. Messages and subscribers are saved here **even if you skip the email setup below entirely.**
+
+**Deploying to shared hosting with no SQLite/SSH support?** `php/db.php` also supports MySQL — every query in the codebase already goes through PDO + prepared statements, so switching backends is just config, no code changes. Add to `php/config.php`:
+```php
+define('DB_DRIVER', 'mysql');
+define('DB_HOST', 'sql123.example.com');
+define('DB_PORT', 3306);       // optional, defaults to 3306
+define('DB_NAME', 'your_db_name');
+define('DB_USER', 'your_db_user');
+define('DB_PASS', 'your_db_password');
+```
+Tables are created automatically on first request either way. The [live demo](https://osama-cafe.xo.je/) runs on this MySQL path.
 
 **5. View submissions & reply:** go to `/php/admin.php` and log in with the `ADMIN_PASSWORD` from step 2 — you'll land on the **Overview** dashboard. From there you can reply to a message or email a subscriber with one click (opens your own email app, pre-filled) — no further setup needed for that.
 

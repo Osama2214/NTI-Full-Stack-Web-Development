@@ -31,3 +31,16 @@ define('SMTP_PORT', 587);
 define('SMTP_SECURE', 'tls'); // 'tls' or 'ssl'
 define('SMTP_USERNAME', '');
 define('SMTP_PASSWORD', '');
+
+// --- Database (optional) ---
+// By default the site uses a self-contained SQLite file at
+// data/osama_cafe.sqlite — nothing to configure, works out of the box.
+// On hosting with no SQLite/SSH support (e.g. most free shared hosts),
+// uncomment these and fill in the MySQL database details from your
+// host's control panel instead:
+// define('DB_DRIVER', 'mysql');
+// define('DB_HOST', 'sql123.example.com');
+// define('DB_PORT', 3306);
+// define('DB_NAME', 'your_db_name');
+// define('DB_USER', 'your_db_user');
+// define('DB_PASS', 'your_db_password');

@@ -6,7 +6,7 @@ Welcome to the **Osama Café** project repository! This project started as **Tas
 ---
 
 ## 🌐 Live Preview & Developer Info
-* **Live Demo:** [osama-cafe.xo.je](https://osama-cafe.xo.je/)
+* **Live Demo:** [osama-cafe.onrender.com](https://osama-cafe.onrender.com/)
 * **Developed By:** Osama Ahmed
 * **GitHub Profile:** [@Osama2214](https://github.com/Osama2214)
 * **Portfolio:** [Osama's Portfolio](https://osama-portfolio-six.vercel.app/)
@@ -129,9 +129,38 @@ define('DB_NAME', 'your_db_name');
 define('DB_USER', 'your_db_user');
 define('DB_PASS', 'your_db_password');
 ```
-Tables are created automatically on first request either way. The [live demo](https://osama-cafe.xo.je/) runs on this MySQL path.
+Tables are created automatically on first request either way. The [live demo](https://osama-cafe.onrender.com/) runs on this MySQL path (deployed with the Docker setup below).
 
 **5. View submissions & reply:** go to `/php/admin.php` and log in with the `ADMIN_PASSWORD` from step 2 — you'll land on the **Overview** dashboard. From there you can reply to a message or email a subscriber with one click (opens your own email app, pre-filled) — no further setup needed for that.
+
+---
+
+### 🐳 Deploying with Docker (Railway / Render / Fly.io)
+
+The repo ships a [`Dockerfile`](Dockerfile) that runs the site with PHP's own built-in server (`php -S`, same engine as the "quick option" above) bound to whatever `$PORT` the platform assigns — works as-is on any container host.
+
+Secrets don't get baked into the image or committed. On container start, [`php/bootstrap-config.php`](php/bootstrap-config.php) generates `php/config.php` **from environment variables**, using `var_export()` so special characters in passwords/hashes (bcrypt hashes always contain literal `$`) round-trip safely — it's a no-op if a real `config.php` already exists. Set these as environment variables on the platform:
+
+| Variable | Required? | Notes |
+|---|---|---|
+| `ADMIN_PASSWORD_HASH` | Yes | Generate with `php -r "echo password_hash('yourpassword', PASSWORD_DEFAULT);"` |
+| `DB_HOST`, `DB_NAME`, `DB_USER`, `DB_PASS` | Yes, for MySQL | Leave `DB_HOST` unset to fall back to the self-contained SQLite file instead |
+| `DB_PORT` | No | Defaults to `3306` |
+| `MAIL_ENABLED`, `MAIL_TO`, `MAIL_FROM_NAME`, `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USERNAME`, `SMTP_PASSWORD` | No | Same as the `config.example.php` fields — leave unset to keep automatic email off |
+
+**What the live demo actually runs on — free, no credit card, no time limit:**
+
+1. **[Render](https://render.com)** — New → Web Service → connect the GitHub repo (Dockerfile auto-detected) → **Free** instance type → set the environment variables from the table above.
+2. **A separate free MySQL host** (e.g. [FreeSQLdatabase.com](https://www.freesqldatabase.com/)) for `DB_HOST`/`DB_NAME`/`DB_USER`/`DB_PASS`/`DB_PORT`, since Render's free tier doesn't include a free MySQL database. ⚠️ Free MySQL hosts like this vary in age and upkeep — some abandoned ones get their expired domain resold and start redirecting somewhere unrelated (and unpleasant). Check where a link actually leads before creating an account.
+3. **A free uptime pinger** (e.g. [cron-job.org](https://cron-job.org)) hitting the site's URL every 10 minutes — Render's free web services spin down after 15 minutes idle (then take ~30-50s to wake back up on the next visit); a ping just under that window keeps it always warm.
+
+**Old-MySQL compatibility, already handled in `php/db.php`:** many free MySQL hosts run genuinely old versions (the live demo's is MySQL 5.5.62, from 2014). Two things that break there and are already worked around in this repo:
+- `DATETIME ... DEFAULT CURRENT_TIMESTAMP` needs MySQL 5.6.5+ — the schema uses `TIMESTAMP` instead, which has supported it since 4.1.
+- A `UNIQUE`/indexed `VARCHAR(255)` column under `utf8mb4` (4 bytes/char) exceeds the 767-byte key limit on older InnoDB — `subscribers.email` is `VARCHAR(191)` instead (191×4 = 764, just under the limit).
+
+**Note on uploads:** photos added through the admin Menu/Gallery editors are written to the container's local disk, which most platforms wipe on every redeploy/restart. Fine for a portfolio demo; for anything longer-lived, mount a persistent volume at `images/menu` and `images/gallery` if the platform supports one.
+
+This was verified end-to-end against a real MySQL database before deploying (`docker build` + a live MySQL container, then again against the actual free MySQL host above): tables auto-create, the homepage renders from the DB, and the newsletter signup's MySQL-specific `INSERT IGNORE` path works.
 
 ---
 

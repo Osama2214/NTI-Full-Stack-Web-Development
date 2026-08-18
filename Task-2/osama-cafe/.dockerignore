@@ -1,0 +1,9 @@
+vendor/
+data/*.sqlite
+data/*.sqlite-journal
+data/login_attempts.json
+images/menu/
+images/gallery/
+php/config.php
+.git/
+.claude/

@@ -2,13 +2,36 @@
 /**
  * Shared database connection.
  *
- * Uses SQLite via PDO — a single self-contained file, no MySQL server
- * required to run. Tables are created automatically on first request.
- * (Swapping to MySQL later only means changing the DSN below to
- * "mysql:host=localhost;dbname=osama_cafe;charset=utf8mb4" plus a
- * username/password — every query below already uses PDO + prepared
- * statements, so nothing else has to change.)
+ * Defaults to SQLite — a single self-contained file, no MySQL server
+ * required to run locally. Tables are created automatically on first
+ * request.
+ *
+ * To run against MySQL instead (e.g. on shared hosting with no SSH/SQLite
+ * support), add to config.php:
+ *   define('DB_DRIVER', 'mysql');
+ *   define('DB_HOST', 'sql123.example.com');
+ *   define('DB_PORT', 3306);       // optional, defaults to 3306
+ *   define('DB_NAME', 'your_db_name');
+ *   define('DB_USER', 'your_db_user');
+ *   define('DB_PASS', 'your_db_password');
+ * Every query in this codebase already uses PDO + prepared statements, so
+ * the handful of driver-specific bits (column types, upsert syntax) are
+ * isolated to this file, db_now_minus_days(), and the two call sites that
+ * use INSERT ... IGNORE / ON DUPLICATE KEY (subscribe.php, settings_admin.php).
  */
+
+// Required here (not just by admin/contact endpoints) so DB_DRIVER/DB_* take
+// effect no matter which entry point requires db.php first — index.php only
+// ever required this file directly, so without this, its config.php was
+// never actually loaded and the homepage would silently stay on SQLite even
+// with DB_DRIVER=mysql set.
+require_once __DIR__ . '/config.php';
+
+/** Which DB backend is active: 'mysql' if configured, otherwise 'sqlite'. */
+function db_driver(): string
+{
+    return (defined('DB_DRIVER') && DB_DRIVER === 'mysql') ? 'mysql' : 'sqlite';
+}
 
 function osama_cafe_db(): PDO
 {
@@ -17,62 +40,90 @@ function osama_cafe_db(): PDO
         return $pdo;
     }
 
-    $dbPath = __DIR__ . '/../data/osama_cafe.sqlite';
-    $pdo = new PDO('sqlite:' . $dbPath);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    $pdo->exec('PRAGMA foreign_keys = ON');
+    $driver = db_driver();
 
-    $pdo->exec('
+    if ($driver === 'mysql') {
+        $host = defined('DB_HOST') ? DB_HOST : 'localhost';
+        $port = defined('DB_PORT') ? DB_PORT : 3306;
+        $name = DB_NAME;
+        $dsn = "mysql:host={$host};port={$port};dbname={$name};charset=utf8mb4";
+        $pdo = new PDO($dsn, DB_USER, DB_PASS, [
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_EMULATE_PREPARES => false,
+        ]);
+    } else {
+        $dbPath = __DIR__ . '/../data/osama_cafe.sqlite';
+        $pdo = new PDO('sqlite:' . $dbPath);
+        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        $pdo->exec('PRAGMA foreign_keys = ON');
+    }
+
+    // Driver-specific fragments used to build the CREATE TABLE statements below.
+    $pk = $driver === 'mysql' ? 'INT AUTO_INCREMENT PRIMARY KEY' : 'INTEGER PRIMARY KEY AUTOINCREMENT';
+    // TIMESTAMP, not DATETIME: older/restrictive MySQL setups (common on free
+    // hosts) reject "DATETIME ... DEFAULT CURRENT_TIMESTAMP" with error 1067
+    // ("Invalid default value") — that dynamic default on DATETIME needs
+    // MySQL 5.6.5+, while TIMESTAMP has supported it since MySQL 4.1.
+    $now = $driver === 'mysql' ? 'TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP' : "TEXT NOT NULL DEFAULT (datetime('now'))";
+    $categoryRef = $driver === 'mysql' ? 'category_id INT NOT NULL' : 'category_id INTEGER NOT NULL REFERENCES categories(id)';
+    $suffix = $driver === 'mysql' ? ' ENGINE=InnoDB DEFAULT CHARSET=utf8mb4' : '';
+
+    $pdo->exec("
         CREATE TABLE IF NOT EXISTS messages (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id $pk,
             name TEXT NOT NULL,
             email TEXT NOT NULL,
             message TEXT NOT NULL,
-            created_at TEXT NOT NULL DEFAULT (datetime(\'now\'))
-        )
-    ');
+            created_at $now
+        )$suffix
+    ");
 
-    $pdo->exec('
+    // VARCHAR(191), not 255: older MySQL/InnoDB (pre-5.7, common on free
+    // hosts) caps index keys at 767 bytes, and utf8mb4 uses up to 4 bytes/
+    // char — 255*4 blows that limit on a UNIQUE column ("Specified key was
+    // too long"), while 191*4 = 764 fits. Harmless for SQLite, which ignores
+    // declared VARCHAR lengths entirely.
+    $pdo->exec("
         CREATE TABLE IF NOT EXISTS subscribers (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            email TEXT NOT NULL UNIQUE,
-            created_at TEXT NOT NULL DEFAULT (datetime(\'now\'))
-        )
-    ');
+            id $pk,
+            email VARCHAR(191) NOT NULL UNIQUE,
+            created_at $now
+        )$suffix
+    ");
 
-    $pdo->exec('
+    $pdo->exec("
         CREATE TABLE IF NOT EXISTS categories (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id $pk,
             name TEXT NOT NULL,
-            slug TEXT NOT NULL UNIQUE,
+            slug VARCHAR(100) NOT NULL UNIQUE,
             sort_order INTEGER NOT NULL DEFAULT 0
-        )
-    ');
+        )$suffix
+    ");
 
-    $pdo->exec('
+    $pdo->exec("
         CREATE TABLE IF NOT EXISTS menu_items (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            category_id INTEGER NOT NULL REFERENCES categories(id),
+            id $pk,
+            $categoryRef,
             title TEXT NOT NULL,
             description TEXT NOT NULL,
             price REAL NOT NULL DEFAULT 0,
             image TEXT NOT NULL,
-            link_label TEXT NOT NULL DEFAULT \'Order Now\',
+            link_label VARCHAR(100) NOT NULL DEFAULT 'Order Now',
             sort_order INTEGER NOT NULL DEFAULT 0,
-            created_at TEXT NOT NULL DEFAULT (datetime(\'now\'))
-        )
-    ');
+            created_at $now
+        )$suffix
+    ");
 
-    $pdo->exec('
+    $pdo->exec("
         CREATE TABLE IF NOT EXISTS settings (
-            key TEXT PRIMARY KEY,
+            `key` VARCHAR(100) PRIMARY KEY,
             value TEXT NOT NULL
-        )
-    ');
+        )$suffix
+    ");
 
-    $pdo->exec('
+    $pdo->exec("
         CREATE TABLE IF NOT EXISTS branches (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id $pk,
             name TEXT NOT NULL,
             address TEXT NOT NULL,
             phone TEXT NOT NULL,
@@ -81,39 +132,39 @@ function osama_cafe_db(): PDO
             maps_url TEXT,
             is_primary INTEGER NOT NULL DEFAULT 0,
             sort_order INTEGER NOT NULL DEFAULT 0
-        )
-    ');
+        )$suffix
+    ");
     ensure_branches_maps_url_column($pdo);
 
-    $pdo->exec('
+    $pdo->exec("
         CREATE TABLE IF NOT EXISTS faqs (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id $pk,
             question TEXT NOT NULL,
             answer TEXT NOT NULL,
             sort_order INTEGER NOT NULL DEFAULT 0
-        )
-    ');
+        )$suffix
+    ");
 
-    $pdo->exec('
+    $pdo->exec("
         CREATE TABLE IF NOT EXISTS testimonials (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id $pk,
             author_name TEXT NOT NULL,
             author_role TEXT NOT NULL,
             quote TEXT NOT NULL,
             rating REAL NOT NULL DEFAULT 5,
             sort_order INTEGER NOT NULL DEFAULT 0
-        )
-    ');
+        )$suffix
+    ");
 
-    $pdo->exec('
+    $pdo->exec("
         CREATE TABLE IF NOT EXISTS gallery_items (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id $pk,
             image TEXT NOT NULL,
             caption TEXT NOT NULL,
             alt_text TEXT NOT NULL,
             sort_order INTEGER NOT NULL DEFAULT 0
-        )
-    ');
+        )$suffix
+    ");
 
     seed_menu_if_empty($pdo);
     seed_settings_if_empty($pdo);
@@ -141,6 +192,20 @@ function asset_version(string $path): string
 }
 
 /**
+ * SQL fragment + bound value for "$column >= now minus $days days", written
+ * against whichever DB backend is active. Use as:
+ *   [$sql, $param] = db_now_minus_days('created_at', 7);
+ *   $pdo->prepare("SELECT COUNT(*) FROM messages WHERE $sql")->execute($param);
+ */
+function db_now_minus_days(string $column, int $days): string
+{
+    if (db_driver() === 'mysql') {
+        return "$column >= DATE_SUB(NOW(), INTERVAL $days DAY)";
+    }
+    return "$column >= datetime('now', '-$days days')";
+}
+
+/**
  * Migration for installs whose branches table predates the maps_url column
  * — a ready-made Google Maps link an admin can paste in, which takes
  * priority over lat/lng and the address text when building the "Open in
@@ -149,7 +214,11 @@ function asset_version(string $path): string
  */
 function ensure_branches_maps_url_column(PDO $pdo): void
 {
-    $columns = $pdo->query('PRAGMA table_info(branches)')->fetchAll(PDO::FETCH_COLUMN, 1);
+    if (db_driver() === 'mysql') {
+        $columns = $pdo->query('SHOW COLUMNS FROM branches')->fetchAll(PDO::FETCH_COLUMN, 0);
+    } else {
+        $columns = $pdo->query('PRAGMA table_info(branches)')->fetchAll(PDO::FETCH_COLUMN, 1);
+    }
     if (!in_array('maps_url', $columns, true)) {
         $pdo->exec('ALTER TABLE branches ADD COLUMN maps_url TEXT');
     }
@@ -158,7 +227,7 @@ function ensure_branches_maps_url_column(PDO $pdo): void
 /** Reads all settings as an associative array, e.g. $settings['site_email']. */
 function get_settings(PDO $pdo): array
 {
-    $rows = $pdo->query('SELECT key, value FROM settings')->fetchAll(PDO::FETCH_KEY_PAIR);
+    $rows = $pdo->query('SELECT `key`, value FROM settings')->fetchAll(PDO::FETCH_KEY_PAIR);
     return $rows;
 }
 
@@ -174,11 +243,11 @@ function seed_menu_if_empty(PDO $pdo): void
         return;
     }
 
-    $pdo->exec('
+    $pdo->exec("
         INSERT INTO categories (name, slug, sort_order) VALUES
-            (\'Coffee\', \'coffee\', 1),
-            (\'Bakery\', \'bakery\', 2)
-    ');
+            ('Coffee', 'coffee', 1),
+            ('Bakery', 'bakery', 2)
+    ");
 
     $coffeeId = (int)$pdo->query("SELECT id FROM categories WHERE slug = 'coffee'")->fetchColumn();
     $bakeryId = (int)$pdo->query("SELECT id FROM categories WHERE slug = 'bakery'")->fetchColumn();
@@ -241,7 +310,7 @@ function seed_settings_if_empty(PDO $pdo): void
         'footer_about_text' => 'We are a community-driven specialty coffee shop and small-batch roastery dedicated to sourcing, roasting, and serving the highest grade coffee beans from sustainable origins.',
     ];
 
-    $stmt = $pdo->prepare('INSERT INTO settings (key, value) VALUES (:key, :value)');
+    $stmt = $pdo->prepare('INSERT INTO settings (`key`, value) VALUES (:key, :value)');
     foreach ($defaults as $key => $value) {
         $stmt->execute(['key' => $key, 'value' => $value]);
     }

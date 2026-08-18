@@ -8,9 +8,9 @@ require_admin_auth();
 $pdo = osama_cafe_db();
 
 $totalMessages = (int)$pdo->query('SELECT COUNT(*) FROM messages')->fetchColumn();
-$weekMessages = (int)$pdo->query("SELECT COUNT(*) FROM messages WHERE created_at >= datetime('now', '-7 days')")->fetchColumn();
+$weekMessages = (int)$pdo->query('SELECT COUNT(*) FROM messages WHERE ' . db_now_minus_days('created_at', 7))->fetchColumn();
 $totalSubscribers = (int)$pdo->query('SELECT COUNT(*) FROM subscribers')->fetchColumn();
-$weekSubscribers = (int)$pdo->query("SELECT COUNT(*) FROM subscribers WHERE created_at >= datetime('now', '-7 days')")->fetchColumn();
+$weekSubscribers = (int)$pdo->query('SELECT COUNT(*) FROM subscribers WHERE ' . db_now_minus_days('created_at', 7))->fetchColumn();
 $totalItems = (int)$pdo->query('SELECT COUNT(*) FROM menu_items')->fetchColumn();
 $totalCategories = (int)$pdo->query('SELECT COUNT(*) FROM categories')->fetchColumn();
 $totalBranches = (int)$pdo->query('SELECT COUNT(*) FROM branches')->fetchColumn();

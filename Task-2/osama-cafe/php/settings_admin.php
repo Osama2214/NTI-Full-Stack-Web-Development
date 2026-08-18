@@ -34,8 +34,12 @@ const EDITABLE_SETTINGS = [
 switch ($action) {
 
     case 'update_settings': {
-        $stmt = $pdo->prepare('INSERT INTO settings (key, value) VALUES (:key, :value)
-            ON CONFLICT(key) DO UPDATE SET value = excluded.value');
+        $upsertSql = db_driver() === 'mysql'
+            ? 'INSERT INTO settings (`key`, value) VALUES (:key, :value)
+                ON DUPLICATE KEY UPDATE value = VALUES(value)'
+            : 'INSERT INTO settings (`key`, value) VALUES (:key, :value)
+                ON CONFLICT(`key`) DO UPDATE SET value = excluded.value';
+        $stmt = $pdo->prepare($upsertSql);
         foreach (EDITABLE_SETTINGS as $key) {
             if (!isset($_POST[$key])) {
                 continue;

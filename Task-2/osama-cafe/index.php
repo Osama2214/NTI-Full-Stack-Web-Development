@@ -75,6 +75,9 @@ function branch_maps_url(array $branch): string
   <meta name="description" content="Welcome to Osama Café. Experience the finest ethically-sourced artisanal coffee roasted locally in a warm, cozy atmosphere. Explore our specialties.">
 <meta name="keywords" content="Cafe, coffee shop, specialty coffee, artisanal roastery, espresso, cold brew, cafe menu">
 
+  <link rel="icon" type="image/png" href="images/logo-1.png?v=<?= asset_version('images/logo-1.png') ?>">
+  <link rel="apple-touch-icon" href="images/logo-1.png?v=<?= asset_version('images/logo-1.png') ?>">
+
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

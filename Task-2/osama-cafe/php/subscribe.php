@@ -19,7 +19,10 @@ if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
 
 try {
     $pdo = osama_cafe_db();
-    $stmt = $pdo->prepare('INSERT OR IGNORE INTO subscribers (email) VALUES (:email)');
+    $insertSql = db_driver() === 'mysql'
+        ? 'INSERT IGNORE INTO subscribers (email) VALUES (:email)'
+        : 'INSERT OR IGNORE INTO subscribers (email) VALUES (:email)';
+    $stmt = $pdo->prepare($insertSql);
     $stmt->execute(['email' => $email]);
 } catch (Throwable $e) {
     error_log('subscribe.php insert failed: ' . $e->getMessage());
